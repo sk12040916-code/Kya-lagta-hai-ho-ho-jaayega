@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Special Entry ❤️</title>
+<style>
+  body {
+    background: #f2f2f2;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    margin: 0; padding: 0;
+    display: flex; justify-content: center;
+    align-items: flex-start; min-height: 100vh;
+    flex-direction: column;
+    transition: background 1s ease;
+  }
+  /* LOVE METER BAR */
+  .love-bar-container {
+    width: 100%;
+    background: #ddd;
+    height: 30px;
+    display: none;  /* hidden initially */
+    align-items: center;
+    position: fixed;
+    top: 0; left: 0;
+    z-index: 99;
+    font-size: 20px;
+    color: #fff;
+  }
+  .love-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ff4e50, #f9d423);
+    width: 50%;
+    transition: width 0.8s ease;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 10px;
+    box-sizing: border-box;
+    font-weight: bold;
+  }
+  /* PAGE CONTAINER STYLE */
+  .container {
+    background: #fff;
+    padding: 30px 20px;
+    border-radius: 15px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+    margin: 80px auto;
+    opacity: 0;
+    transform: translateY(20px);
+    pointer-events: none;
+    transition: opacity 0.8s ease, transform 0.8s ease;
+    display: none;
+  }
+  /* VISIBLE PAGE */
+  .container.visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+    display: block;
+  }
+  .question {
+    font-size: 1.1em;
+    margin-bottom: 20px;
+    color: #444;
+  }
+  button {
+    padding: 8px 25px;
+    margin: 8px;
+    border: none;
+    cursor: pointer;
+    font-size: 1em;
+    border-radius: 8px;
+    transition: background 0.2s;
+  }
+  .btn-yes {
+    background: #834d9b;
+    color: white;
+  }
+  .btn-no {
+    background: #fff;
+    color: #834d9b;
+    border: 2px solid #834d9b;
+  }
+  .btn-yes:hover { background: #5c206a; }
+  .btn-no:hover { background: #ffd6fa; }
+  .hint, .response {
+    margin-top: 15px;
+    font-size: 0.95em;
+  }
+  input[type="text"] {
+    padding: 8px;
+    border-radius: 6px;
+    border: 2px solid #834d9b;
+    width: 80%;
+    margin-top: 8px;
+  }
+</style>
+</head>
+<body>
+
+<!-- LOVE METER -->
+<div class="love-bar-container" id="loveBarContainer">
+  <div class="love-bar-fill" id="loveBar">50% 😐</div>
+</div>
+
+<!-- PAGES -->
+<div class="container visible" id="securityStep">
+  <div class="question">To enter, type your name</div>
+  <input type="text" id="secureNameInput" placeholder="Your first name only" autocomplete="off">
+  <div class="hint">Only type your first name, not title</div>
+  <button class="btn btn-yes" id="securityBtn" onclick="checkForEntry()">Enter</button>
+  <div class="response" id="securityResponse"></div>
+</div>
+
+<div class="container" id="step1">
+  <div class="question">Do you remember a new guy come in your class when you were in 7th standard?</div>
+  <button class="btn btn-yes" id="step1yes" onclick="step1('yes', this)">Yes 😍</button>
+  <button class="btn btn-no" id="step1no" onclick="step1('no', this)">No 🤔</button>
+  <div class="response" id="step1response"></div>
+</div>
+
+<div class="container" id="guessNameStep">
+  <div class="question">Oh, no worries! Can you guess my name?</div>
+  <div class="hint">Hint: The guy who left the school after a small fight with the principal.</div>
+  <input type="text" id="guessNameInput" placeholder="Type your guess here" autocomplete="off">
+  <button class="btn btn-yes" id="guessNameBtn" onclick="checkGuessName(this)">Submit</button>
+  <div class="response" id="guessNameResponse"></div>
+</div>
+
+<div class="container" id="guessWrongLove">
+  <div class="question" id="wrongNameMsg"></div>
+  <button class="btn btn-yes" id="guessWrongYes" onclick="wrongGuessLove('yes', this)">Yes 🥰</button>
+  <button class="btn btn-no" id="guessWrongNo" onclick="wrongGuessLove('no', this)">No 🙈</button>
+</div>
+
+<div class="container" id="step2">
+  <div class="question">Wow, you're amazing!<br>Can you remember my name?</div>
+  <div class="hint">Hint: I left the school after a small fight with the principal.</div>
+  <input type="text" id="nameInput" placeholder="Type my name here" autocomplete="off">
+  <button class="btn btn-yes" id="nameBtn" onclick="checkName(this)">Submit</button>
+  <div class="response" id="nameResponse"></div>
+</div>
+
+<div class="container" id="step3">
+  <div class="question" id="confessionText">
+    I can't believe that you remembered me till today! 💗<br><br>
+    You know, I really liked you and tried many times to express my feelings, but you never came outside of class solo.<br><br>
+    So this is the only way I could finally express how much you mean to me.<br>
+    <strong>Do you still love me?</strong>
+  </div>
+  <button class="btn btn-yes" id="finalYes" onclick="finalAnswer('yes', this)">Yes 🥰</button>
+  <button class="btn btn-no" id="finalNo" onclick="finalAnswer('no', this)">No 🙈</button>
+  <div class="response" id="finalResponse"></div>
+</div>
+
+<div class="container" id="finalStep">
+  <div class="question" id="finalMessage"></div>
+</div>
+
+<div class="container" id="prankGang">
+  <div class="question">Thanks for joining our Prank gang! 😜<br>Maybe you can try again later!</div>
+</div>
+
+<script>
+let loveScore = 50; 
+let lock = false;
+
+const loveBar = document.getElementById('loveBar');
+const loveBarContainer = document.getElementById('loveBarContainer');
+
+function updateLove(val) {
+  loveScore += val;
+  if(loveScore > 100) loveScore = 100;
+  if(loveScore < 0) loveScore = 0;
+  let emoji = "😐";
+  if(loveScore <= 20) emoji = "😔";
+  else if(loveScore <= 40) emoji = "😌";
+  else if(loveScore <= 60) emoji = "😊";
+  else if(loveScore <= 80) emoji = "😍";
+  else emoji = "❤️";
+  loveBar.style.width = loveScore + "%";
+  loveBar.textContent = loveScore + "% " + emoji;
+  document.body.style.background = `linear-gradient(120deg, rgba(251,194,235,1) 0%, rgba(166,193,238,${0.5 + loveScore / 200}) 100%)`;
+}
+
+function showStep(id) {
+  if(lock) return;
+  lock = true;
+  const allContainers = document.querySelectorAll('.container');
+  const transitionTime = 800; // match CSS transition time
+  const current = [...allContainers].find(c => c.classList.contains('visible'));
+  if(current && current.id === id){
+    lock = false;
+    return; // already visible
+  }
+
+  if(current){
+    current.classList.remove('visible');
+    setTimeout(() => {
+      current.style.display = 'none';
+      const next = document.getElementById(id);
+      next.style.display = 'block';
+      setTimeout(() => {
+        next.classList.add('visible');
+        lock = false;
+      }, 50);
+    }, transitionTime);
+  } else {
+    const next = document.getElementById(id);
+    next.style.display = 'block';
+    setTimeout(() => {
+      next.classList.add('visible');
+      lock = false;
+    }, 50);
+  }
+}
+
+// Disable buttons helper - prevents spamming
+function disableButtons(buttons, disable) {
+  buttons.forEach(b => b.disabled = disable);
+}
+
+// Wrapper for yes/no buttons to prevent multi-click and maintain delay
+function handleClick(buttons, delay, callback) {
+  disableButtons(buttons, true);
+  callback();
+  setTimeout(() => {
+    disableButtons(buttons, false);
+  }, delay);
+}
+
+function checkForEntry() {
+  if(lock) return;
+  const btn = [document.getElementById('securityBtn')];
+  handleClick(btn, 3000, () => {
+    const val = document.getElementById('secureNameInput').value.trim().toLowerCase();
+    const res = document.getElementById('securityResponse');
+    if(val === "muskan" || val === "sakshi") {
+      loveBarContainer.style.display = 'flex';
+      updateLove(0);
+      showStep('step1');
+    } else if(val === "") {
+      res.innerHTML = 'Please enter your first name to proceed.';
+    } else {
+      showStep('prankGang');
+    }
+  });
+}
+
+function step1(ans, btn) {
+  if(lock) return;
+  const btns = [document.getElementById('step1yes'), document.getElementById('step1no')];
+  handleClick(btns, 3000, () => {
+    const res = document.getElementById('step1response');
+    if(ans === 'yes') {
+      updateLove(10);
+      res.innerHTML = "That's so sweet! You have an amazing memory! 😊";
+      setTimeout(() => showStep('step2'), 3000);
+    } else {
+      updateLove(-10);
+      res.innerHTML = "Haha, that's okay! Sometimes old memories fade, but I still think you're super special. 💛";
+      setTimeout(() => showStep('guessNameStep'), 3000);
+    }
+  });
+}
+
+function checkGuessName(btn) {
+  if(lock) return;
+  handleClick([btn], 3000, () => {
+    const val = document.getElementById('guessNameInput').value.trim().toLowerCase();
+    const res = document.getElementById('guessNameResponse');
+    if(!val) { 
+      res.innerHTML = 'Please type your guess to proceed.'; 
+      return; 
+    }
+    if(val === "ayush" || val === "shivam") {
+      updateLove(10);
+      document.getElementById('confessionText').innerHTML = "Wow, you guessed it right! 💗<br><br>You know, I really liked you and tried many times to express my feelings, but you never came outside of class solo.<br><br>So this is the only way I could finally express how much you mean to me.<br><strong>Do you still love me?</strong>";
+      showStep('step3');
+    } else {
+      updateLove(-10);
+      document.getElementById('wrongNameMsg').innerHTML = "It's me, Ayush (or Shivam).<br>I know old memories fade and that's okay.<br>But tell me honestly, do you love me?";
+      showStep('guessWrongLove');
+    }
+  });
+}
+
+function wrongGuessLove(ans, btn) {
+  if(lock) return;
+  handleClick([btn, document.getElementById('guessWrongYes'), document.getElementById('guessWrongNo')], 5000, () => {
+    if(ans === 'yes') {
+      updateLove(15);
+      document.getElementById('finalMessage').innerHTML = "I know that! For your privacy, I coded this so I can't see any of your answers. 💖<br>If you like me too, my DM is always open for you. 😊";
+      setTimeout(() => showStep('finalStep'), 5000);
+    } else {
+      updateLove(-15);
+      document.getElementById('finalMessage').innerHTML = "No worries! I will never disturb you in your whole life.<br>But if you ever want to talk, my DM is always open for you. 😊";
+      setTimeout(() => showStep('finalStep'), 5000);
+    }
+  });
+}
+
+function checkName(btn) {
+  if(lock) return;
+  handleClick([btn], 3000, () => {
+    const val = document.getElementById('nameInput').value.trim().toLowerCase();
+    const res = document.getElementById('nameResponse');
+    if(!val) { 
+      res.innerHTML = 'Please type a name to proceed.'; 
+      return; 
+    }
+    if(val === "ayush" || val === "shivam") {
+      updateLove(10);
+      showStep('step3');
+    } else {
+      updateLove(-5);
+      res.innerHTML = "Hmm... maybe another hint? Just think of the guy who left suddenly!";
+    }
+  });
+}
+
+function finalAnswer(ans, btn) {
+  if(lock) return;
+  handleClick([btn, document.getElementById('finalYes'), document.getElementById('finalNo')], 5000, () => {
+    if(ans === 'yes') {
+      updateLove(60); // Increase score by 60 on yes!
+      document.getElementById('finalMessage').innerHTML = "I know that! For your privacy, I coded this so I can't see any of your answers. 💖<br>If you like me too, my DM is always open for you. 😊";
+      setTimeout(() => showStep('finalStep'), 5000);
+    } else {
+      updateLove(-15);
+      document.getElementById('finalMessage').innerHTML = "No worries! I will never disturb you in your whole life.<br>But if you ever want to talk, my DM is always open for you. 😊";
+      setTimeout(() => showStep('finalStep'), 5000);
+    }
+  });
+}
+</script>
+
+</body>
+</html>
+
